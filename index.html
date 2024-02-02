@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bootstrap Template</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        //Sayfa açılışında country filteri gizli olacak
+        $("#filterCountry").hide();
+
+        $("button[filter]").click(function () {
+          var filter = $(this).attr("filter");
+          const splitArray = filter.split("_");
+          if (splitArray[0] == "region") {
+            if ($("#selectedFilterRegion").val() == filter) {
+              $("input#selectedFilterRegion").val("").trigger("change");
+            } else {
+              $("input#selectedFilterRegion").val(filter).trigger("change");
+            }
+
+            $("input#selectedFilterCountryList").val("").trigger("change"); //Her türlü region değiştiğinde country filteri sıfırlayacağız.
+          } else if (splitArray[0] == "country") {
+            var selectedCountryFilter = $(
+              "input#selectedFilterCountryList"
+            ).val();
+
+            var countryFilterExist = false;
+            selectedCountryFilter.split(",").forEach((country) => {
+              if (country == filter) {
+                countryFilterExist = true;
+              }
+            });
+            if (!countryFilterExist) {
+              $("input#selectedFilterCountryList")
+                .val(selectedCountryFilter + "," + filter)
+                .trigger("change");
+            } else {
+              //countryfilter zaten varsa inputtan sileceğiz.
+              selectedCountryFilter = selectedCountryFilter.replace(
+                "," + filter,
+                ""
+              );
+              $("input#selectedFilterCountryList")
+                .val(selectedCountryFilter)
+                .trigger("change");
+            }
+          } else if (splitArray[0] == "service") {
+            var selectedServiceFilter = $(
+              "input#selectedFilterServiceList"
+            ).val();
+
+            var serviceFilterExist = false;
+            selectedServiceFilter.split(",").forEach((service) => {
+              if (service == filter) {
+                serviceFilterExist = true;
+              }
+            });
+            if (!serviceFilterExist) {
+              $("input#selectedFilterServiceList")
+                .val(selectedServiceFilter + "," + filter)
+                .trigger("change");
+            } else {
+              //servicefilter zaten varsa inputtan sileceğiz.
+              selectedServiceFilter = selectedServiceFilter.replace(
+                "," + filter,
+                ""
+              );
+              $("input#selectedFilterServiceList")
+                .val(selectedServiceFilter)
+                .trigger("change");
+            }
+          }
+        });
+
+        $("input[type=hidden]").change(function () {
+          console.log("change", $(this).val());
+
+          if ($(this).attr("id") == "selectedFilterRegion") {
+            var selectedFilterRegion = $(this).val();
+            if (selectedFilterRegion != "") {
+              $("#filterCountry").show();
+              $("button[filter^='country']").hide();
+              $("button[region^='" + selectedFilterRegion + "']").show();
+            } else {
+              $("#filterCountry").hide();
+            }
+          }
+
+          filterPartners();
+        });
+
+        function filterPartners() {
+          var selectedRegion = $("input#selectedFilterRegion").val();
+          var selectedCountryList = $("input#selectedFilterCountryList").val();
+          var selectedServiceList = $("input#selectedFilterServiceList").val();
+          console.log("selectedRegion", selectedRegion);
+          console.log("selectedCountryList", selectedCountryList);
+          console.log("selectedServiceList", selectedServiceList);
+          $(".partner").hide();
+
+          $(".partner").each(function () {
+            var partnerClassList = $(this).attr("class");
+            console.log("partnerClassList", partnerClassList);
+          });
+
+          if (selectedRegion != "") {
+            $("." + selectedRegion).show();
+          }
+
+          if (selectedCountryList != "") {
+            selectedCountryList.split(",").forEach((country) => {
+              if (country != "") {
+                $("." + country).show();
+              }
+            });
+          }
+
+          if (selectedServiceList != "") {
+            selectedServiceList.split(",").forEach((service) => {
+              if (service != "") {
+                console.log("service", service);
+                $("." + service).show();
+              }
+            });
+          }
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <input type="hidden" id="selectedFilterRegion" value="" />
+    <input type="hidden" id="selectedFilterCountryList" value="" />
+    <input type="hidden" id="selectedFilterServiceList" value="" />
+    <div class="container">
+      <div id="#filterRegion" class="row">
+        <div class="col-md-12">
+          <h2>Regions</h2>
+          <div class="btn-group" role="group">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              filter="region_asiaandpasific"
+            >
+              Asia and Pasific
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              filter="region_europe"
+            >
+              Europe
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              filter="region_middleeast"
+            >
+              Middle East
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              filter="region_northamerica"
+            >
+              North America
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              filter="region_latinamerica"
+            >
+              Latin America
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="filterCountry" class="row">
+        <div class="col-md-12">
+          <h2>Countries</h2>
+          <div class="btn-group" role="group">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              filter="country_canada"
+              region="region_northamerica"
+            >
+              Canada
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              filter="country_belgium"
+              region="region_europe"
+            >
+              Belgium
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              filter="country_germany"
+              region="region_europe"
+            >
+              Germany
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              filter="country_turkey"
+              region="region_middleeast"
+            >
+              Turkey
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              filter="country_japan"
+              region="region_asiaandpasific"
+            >
+              Japan
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="filterService" class="row">
+        <div class="col-md-12">
+          <h2>Services</h2>
+          <div class="btn-group" role="group">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              filter="service_managed"
+            >
+              Managed
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              filter="service_consulting"
+            >
+              Consulting
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              filter="service_support"
+            >
+              Support
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              filter="service_training"
+            >
+              Training
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              filter="service_integration"
+            >
+              Integration
+            </button>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="col-md-4">
+          <div
+            class="card partner region_europe region_northamerica country_canada country_belgium services_managed"
+          >
+            <div class="card-header">
+              <h1>Partner 1</h1>
+            </div>
+            <div class="card-body">
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla
+                nec purus feugiat, molestie ipsum et, consequat nibh. Etiam non
+                elit dui. Nullam vel eros sit amet arcu vestibulum accumsan in
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div
+            class="card partner region_europe country_germany services_managed"
+          >
+            <div class="card-header">
+              <h1>Partner 2</h1>
+            </div>
+            <div class="card-body">
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla
+                nec purus feugiat, molestie ipsum et, consequat nibh. Etiam non
+                elit dui. Nullam vel eros sit amet arcu vestibulum accumsan in
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -15,6 +15,7 @@
       $(document).ready(function () {
         //Sayfa açılışında country filteri gizli olacak
         $("#filterCountry").hide();
+        $(".partner").hide();
 
         $("button[filter]").click(function () {
           var filter = $(this).attr("filter");
@@ -93,22 +94,125 @@
               $("#filterCountry").hide();
             }
           }
-
+          setFilterButtonActive();
           filterPartners();
         });
 
+        function setFilterButtonActive() {
+          $("button[filter]").each(function () {
+            $(this).removeClass("active");
+            var filter = $(this).attr("filter");
+            var filterType = filter.split("_")[0];
+            var selectedFilter = "";
+            if (filterType == "region") {
+              selectedFilter = $("input#selectedFilterRegion").val();
+            } else if (filterType == "country") {
+              selectedFilter = $("input#selectedFilterCountryList").val();
+            } else if (filterType == "service") {
+              selectedFilter = $("input#selectedFilterServiceList").val();
+            }
+            if (selectedFilter != "") {
+              var selectedFilterArray = selectedFilter.split(",");
+              console.log("selectedFilterArray", selectedFilterArray);
+              selectedFilterArray.forEach((selectedFilterItem) => {
+                if (selectedFilterItem == filter) {
+                  $(this).addClass("active");
+                }
+              });
+            } else {
+              $(this).removeClass("active");
+            }
+          });
+        }
         function filterPartners() {
           var selectedRegion = $("input#selectedFilterRegion").val();
           var selectedCountryList = $("input#selectedFilterCountryList").val();
           var selectedServiceList = $("input#selectedFilterServiceList").val();
+
+          if (
+            selectedRegion == "" &&
+            selectedCountryList == "" &&
+            selectedServiceList == ""
+          ) {
+            $(".showcasePartnerContainer").show();
+            $(".partnerContainer").hide();
+          } else {
+            $(".showcasePartnerContainer").hide();
+            $(".partnerContainer").show();
+          }
+
+          console.log("-------------------");
           console.log("selectedRegion", selectedRegion);
           console.log("selectedCountryList", selectedCountryList);
           console.log("selectedServiceList", selectedServiceList);
           $(".partner").hide();
-
+          console.log("tüm partnerlar gizlendi.   ");
           $(".partner").each(function () {
+            var partner = $(this);
+            console.log("partner", $(partner).find("h1").html());
             var partnerClassList = $(this).attr("class");
-            console.log("partnerClassList", partnerClassList);
+            var partnerRegionFilter = [];
+            var partnerCountryFilter = [];
+            var partnerServiceFilter = [];
+            partnerClassList.split(" ").forEach((classItem) => {
+              if (classItem.startsWith("region")) {
+                partnerRegionFilter.push(classItem);
+              } else if (classItem.startsWith("country")) {
+                partnerCountryFilter.push(classItem);
+              } else if (classItem.startsWith("service")) {
+                partnerServiceFilter.push(classItem);
+              }
+            });
+            console.log("partnerRegionFilter", partnerRegionFilter);
+            console.log("partnerCountryFilter", partnerCountryFilter);
+            console.log("partnerServiceFilter", partnerServiceFilter);
+
+            var regionCondition = false;
+            var countryCondition = false;
+            var serviceCondition = false;
+            if (selectedRegion != "") {
+              if (partnerRegionFilter.includes(selectedRegion)) {
+                regionCondition = true;
+              }
+
+              if (selectedCountryList != "") {
+                var selectedCountryListArray = selectedCountryList.split(",");
+                selectedCountryListArray.forEach((country) => {
+                  if (partnerCountryFilter.includes(country)) {
+                    countryCondition = true;
+                  }
+                });
+              } else {
+                countryCondition = true;
+              }
+            }
+
+            if (selectedServiceList != "") {
+              var selectedServiceListArray = selectedServiceList.split(",");
+              selectedServiceListArray.forEach((service) => {
+                if (partnerServiceFilter.includes(service)) {
+                  serviceCondition = true;
+                }
+              });
+            } else {
+              serviceCondition = true;
+            }
+
+            console.log(regionCondition, countryCondition, serviceCondition);
+            if (regionCondition && countryCondition && serviceCondition) {
+              console.log(
+                "partner",
+                $(partner).find("h1").html() + " gösterildi."
+              );
+
+              $(partner).removeClass("d-none");
+            } else {
+              console.log(
+                "partner",
+                $(partner).find("h1").html() + " gizlendi."
+              );
+              $(partner).addClass("d-none");
+            }
           });
 
           if (selectedRegion != "") {
@@ -271,11 +375,44 @@
           </div>
         </div>
       </div>
-      <hr />
+    </div>
+    <div class="container showcasePartnerContainer">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card showcasepartner">
+            <div class="card-header">
+              <h1>Showcase Partner 1</h1>
+            </div>
+            <div class="card-body">
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla
+                nec purus feugiat, molestie ipsum et, consequat nibh. Etiam non
+                elit dui. Nullam vel eros sit amet arcu vestibulum accumsan in
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card showcasepartner">
+            <div class="card-header">
+              <h1>Showcase Partner 2</h1>
+            </div>
+            <div class="card-body">
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla
+                nec purus feugiat, molestie ipsum et, consequat nibh. Etiam non
+                elit dui. Nullam vel eros sit amet arcu vestibulum accumsan in
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container partnerContainer">
       <div class="row">
         <div class="col-md-4">
           <div
-            class="card partner region_europe region_northamerica country_canada country_belgium services_managed"
+            class="card partner region_europe region_northamerica country_canada country_belgium service_managed"
           >
             <div class="card-header">
               <h1>Partner 1</h1>
@@ -291,7 +428,7 @@
         </div>
         <div class="col-md-4">
           <div
-            class="card partner region_europe country_germany services_managed"
+            class="card partner region_europe country_germany service_managed"
           >
             <div class="card-header">
               <h1>Partner 2</h1>
